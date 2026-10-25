@@ -12,8 +12,11 @@
             height: 100%;
             width: 100%;
             overflow: hidden;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f6f8;
         }
         .frame-container {
+            position: relative;
             width: 100%;
             height: 100%;
         }
@@ -21,20 +24,108 @@
             width: 100%;
             height: 100%;
             border: none;
+            display: block;
         }
+        /* Layar loading */
+        #loader {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #f4f6f8;
+            color: #333;
+            z-index: 5;
+            transition: opacity .4s;
+            text-align: center;
+            padding: 20px;
+        }
+        #loader.hide { opacity: 0; pointer-events: none; }
+        .spinner {
+            width: 46px; height: 46px;
+            border: 5px solid #d5dbe1;
+            border-top-color: #1a73e8;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 16px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        /* Pesan cadangan bila iframe diblokir */
+        #fallback {
+            display: none;
+            margin-top: 18px;
+            max-width: 420px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .btn {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 10px 22px;
+            background: #1a73e8;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+        .btn:hover { background: #1558b0; }
     </style>
 </head>
 <body>
 
     <div class="frame-container">
-        <!-- Silakan ganti src dengan URL Google Apps Script Anda -->
-        <iframe 
-            id="app" 
-            src="https://script.google.com/macros/s/AKfycbwspmAb4-SFnuCtf2VGiGu5EuxcHItDE78_TlYEJDRFC9GUD1xdvxGsbeo-7jpR-JBb/exec"
-            scrolling="yes" 
-            allowfullscreen="true">
+        <div id="loader">
+            <div class="spinner"></div>
+            <div><strong>KARIMUN CSIRT Online</strong><br>Memuat layanan, mohon tunggu...</div>
+            <div id="fallback">
+                Halaman belum tampil? Peramban atau pengaturan Google dapat memblokir tampilan di dalam bingkai.
+                <br>
+                <a class="btn" id="openDirect" href="#">Buka Layanan Langsung</a>
+            </div>
+        </div>
+
+        <iframe
+            id="app"
+            title="KARIMUN CSIRT Online"
+            referrerpolicy="no-referrer-when-downgrade"
+            allow="clipboard-write; fullscreen"
+            allowfullscreen>
         </iframe>
     </div>
 
+    <script>
+        var APP_URL = "https://script.google.com/macros/s/AKfycbwspmAb4-SFnuCtf2VGiGu5EuxcHItDE78_TlYEJDRFC9GUD1xdvxGsbeo-7jpR-JBb/exec";
+
+        var frame    = document.getElementById("app");
+        var loader   = document.getElementById("loader");
+        var fallback = document.getElementById("fallback");
+        document.getElementById("openDirect").href = APP_URL;
+
+        // Pada layar sangat kecil/WebView tertentu, buka langsung lebih stabil
+        var ua = navigator.userAgent || "";
+        var isInAppBrowser = /FBAN|FBAV|Instagram|Line\/|; wv\)/i.test(ua);
+
+        if (isInAppBrowser) {
+            window.location.replace(APP_URL);
+        } else {
+            frame.addEventListener("load", function () {
+                // Beri jeda singkat agar konten selesai dirender
+                setTimeout(function () { loader.classList.add("hide"); }, 600);
+            });
+            frame.src = APP_URL;
+
+            // Jika setelah 8 detik loader masih tampil, tawarkan tombol buka langsung
+            setTimeout(function () {
+                if (!loader.classList.contains("hide")) {
+                    fallback.style.display = "block";
+                }
+            }, 8000);
+        }
+    </script>
+
+    <noscript>
+        <meta http-equiv="refresh" content="0; url=https://script.google.com/macros/s/AKfycbwspmAb4-SFnuCtf2VGiGu5EuxcHItDE78_TlYEJDRFC9GUD1xdvxGsbeo-7jpR-JBb/exec">
+    </noscript>
 </body>
 </html>

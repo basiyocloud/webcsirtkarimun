@@ -6,35 +6,34 @@
     <title>KARIMUN CSIRT Online - Layanan Manajemen Informasi dan Pengaduan Keamanan Siber Kabupaten Karimun</title>
     <link rel="icon" href="https://karimunkab.go.id/favicon.ico" />
     <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            width: 100%;
-            overflow: hidden;
-        }
-        .frame-container {
-            width: 100%;
-            height: 100%;
-        }
-        #app {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
+        html, body { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; background: #ebf5fb; }
+        .frame-container { width: 100%; height: 100%; position: relative; }
+        #app { width: 100%; height: 100%; border: none; display: block; }
+        #fallback { position: absolute; inset: auto 0 0 0; text-align: center; padding: 8px; font: 14px system-ui, sans-serif; background: #fff8e1; color: #5d4037; display: none; }
+        #fallback a { color: #1a5276; font-weight: 600; }
     </style>
 </head>
 <body>
-
     <div class="frame-container">
-        <!-- Silakan ganti src dengan URL Google Apps Script Anda -->
-        <iframe 
-            id="app" 
+        <!-- URL web app Google Apps Script (deployment /exec). Wajib deployment terbaru dengan Code.gs revisi (ALLOWALL untuk halaman publik). -->
+        <iframe
+            id="app"
+            title="KARIMUN-CSIRT"
             src="https://script.google.com/macros/s/AKfycbwspmAb4-SFnuCtf2VGiGu5EuxcHItDE78_TlYEJDRFC9GUD1xdvxGsbeo-7jpR-JBb/exec"
-            scrolling="yes" 
-            allowfullscreen="true">
+            scrolling="yes"
+            allowfullscreen="true"
+            allow="fullscreen; clipboard-write"
+            referrerpolicy="no-referrer-when-downgrade">
         </iframe>
+        <div id="fallback">Situs tidak tampil? <a href="https://script.google.com/macros/s/AKfycbwspmAb4-SFnuCtf2VGiGu5EuxcHItDE78_TlYEJDRFC9GUD1xdvxGsbeo-7jpR-JBb/exec" target="_blank" rel="noopener noreferrer">Buka langsung di tab baru</a></div>
     </div>
-
+    <script>
+        // Tampilkan tautan cadangan bila bingkai belum termuat dalam 12 detik.
+        (function () {
+            var loaded = false, f = document.getElementById('app');
+            f.addEventListener('load', function () { loaded = true; });
+            setTimeout(function () { if (!loaded) document.getElementById('fallback').style.display = 'block'; }, 12000);
+        })();
+    </script>
 </body>
 </html>
